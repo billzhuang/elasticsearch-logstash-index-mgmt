@@ -89,11 +89,11 @@ do
     b)
       S3_BASE=$OPTARG
       ;;
-    i)
-      INDEX_DIR=$OPTARG
-      ;;
     in)
       INDEX=$OPTARG
+      ;;
+    i)
+      INDEX_DIR=$OPTARG
       ;;
     d)
       DATE=$OPTARG
@@ -158,7 +158,7 @@ if [ -n "$ERROR" ]; then
 fi
 
 # Default logstash index naming is hardcoded, as are YYYY-mm container directories.
-if [-n "$INDEX"]; then
+if [ -n "$INDEX" ]; then
   YEARMONTH=`date --date='yesterday' +"%Y-%m"`
 else
   if [ -n "$DATE" ]; then
