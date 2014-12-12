@@ -30,7 +30,7 @@ OPTIONS:
   -h    Show this message
   -b    S3 path for backups (Required)
   -i    Elasticsearch index directory (Required)
-  -in   Elasticsearch index name
+  -a    Elasticsearch index name
   -d    Backup a specific date (format: YYYY.mm.dd)
   -c    Command for s3cmd (default: s3cmd put)
   -t    Temporary directory for archiving (default: /tmp)
@@ -40,6 +40,7 @@ OPTIONS:
   -e    Elasticsearch URL (default: http://localhost:9200)
   -n    How nice tar must be (default: 19)
   -u    Restart command for elastic search (default 'service elasticsearch restart')
+  -m    Middle fix, like index name is Logstash-xxxyyy-YYYYmmdd, it should be xxxyyy to be set
 
 EXAMPLES:
 
@@ -75,11 +76,12 @@ REPLICAS=0
 ELASTICSEARCH="http://localhost:9200"
 NICE=19
 RESTART="service elasticsearch restart"
+MIDDLE_FIX=""
 
 # Validate shard/replica values
 RE_D="^[0-9]+$"
 
-while getopts ":b:i:in:d:c:t:ps:r:e:n:u:h" flag
+while getopts ":b:i:a:m:d:c:t:ps:r:e:n:u:h" flag
 do
   case "$flag" in
     h)
@@ -89,8 +91,11 @@ do
     b)
       S3_BASE=$OPTARG
       ;;
-    in)
+    a)
       INDEX=$OPTARG
+      ;;
+    m)
+      MIDDLE_FIX=$OPTARG
       ;;
     i)
       INDEX_DIR=$OPTARG
@@ -159,14 +164,14 @@ fi
 
 # Default logstash index naming is hardcoded, as are YYYY-mm container directories.
 if [ -n "$INDEX" ]; then
-  YEARMONTH=`date --date='yesterday' +"%Y-%m"`
+  YEARMONTH=`date +"%Y-%m-%d"`
 else
   if [ -n "$DATE" ]; then
-    INDEX="logstash-$DATE"
+    INDEX="logstash-$MIDDLE_FIX-$DATE"
     YEARMONTH=${DATE//\./-}
     YEARMONTH=${YEARMONTH:0:7}
   else
-    INDEX=`date --date='yesterday' +"logstash-%Y.%m.%d"`
+    INDEX=`date --date='yesterday' +"logstash-$MIDDLE_FIX-%Y.%m.%d"`
     YEARMONTH=`date --date='yesterday' +"%Y-%m"`
   fi
 fi
