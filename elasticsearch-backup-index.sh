@@ -30,6 +30,7 @@ OPTIONS:
   -h    Show this message
   -b    S3 path for backups (Required)
   -i    Elasticsearch index directory (Required)
+  -in   Elasticsearch index name
   -d    Backup a specific date (format: YYYY.mm.dd)
   -c    Command for s3cmd (default: s3cmd put)
   -t    Temporary directory for archiving (default: /tmp)
@@ -78,7 +79,7 @@ RESTART="service elasticsearch restart"
 # Validate shard/replica values
 RE_D="^[0-9]+$"
 
-while getopts ":b:i:d:c:t:ps:r:e:n:u:h" flag
+while getopts ":b:i:in:d:c:t:ps:r:e:n:u:h" flag
 do
   case "$flag" in
     h)
@@ -90,6 +91,9 @@ do
       ;;
     i)
       INDEX_DIR=$OPTARG
+      ;;
+    in)
+      INDEX=$OPTARG
       ;;
     d)
       DATE=$OPTARG
@@ -154,14 +158,19 @@ if [ -n "$ERROR" ]; then
 fi
 
 # Default logstash index naming is hardcoded, as are YYYY-mm container directories.
-if [ -n "$DATE" ]; then
-  INDEX="logstash-$DATE"
-  YEARMONTH=${DATE//\./-}
-  YEARMONTH=${YEARMONTH:0:7}
-else
-  INDEX=`date --date='yesterday' +"logstash-%Y.%m.%d"`
+if [-n "$INDEX"]; then
   YEARMONTH=`date --date='yesterday' +"%Y-%m"`
+else
+  if [ -n "$DATE" ]; then
+    INDEX="logstash-$DATE"
+    YEARMONTH=${DATE//\./-}
+    YEARMONTH=${YEARMONTH:0:7}
+  else
+    INDEX=`date --date='yesterday' +"logstash-%Y.%m.%d"`
+    YEARMONTH=`date --date='yesterday' +"%Y-%m"`
+  fi
 fi
+
 S3_TARGET="$S3_BASE/$YEARMONTH"
 
 # Make sure there is an index
