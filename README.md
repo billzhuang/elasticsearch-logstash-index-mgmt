@@ -1,39 +1,11 @@
 ## Elasticsearch Logstash Index Management
 
-Please note that [Elasticsearch](http://github.com/elasticsearch) provides the
-python based [Curator](http://github.com/elasticsearch/curator) which manages
-closing/deleting and maintenance with lots of tuning capabilities. It is worth
-investigating Curator as an elasticsearch-maintained solution for your cluster's
-time-based index maintenance needs.
+I folked [imperialwicket/elasticsearch-logstash-index-mgmt](http://github.com/imperialwicket/elasticsearch-logstash-index-mgmt), but added 2 functions which cause i cannot merge back to my upstream.
 
-If you are using Curator with Elasticsearch >= 1.0.0 (and
-[Hubot](https://hubot.github.com/)) and you want a way to restore old indices,
-try [hubot-elk-restore](https://github.com/imperialwicket/hubot-elk-restore).
+1. allow backup non-logstash index to backup
+2. allow logstash index with different type, such as logstash-xxxyyy-YYYYMMDD
 
-If you prefer to roll your own, or need functionality that's not (yet) available
-in Curator, these scripts may serve as a good starting point. This collection of
-bash scripts for manages [Elasticsearch](http://www.elasticsearch.org) indices.
-They are specifically designed around the daily index pattern used in
-[Logstash](http://logstash.net).
-
-Support is integrated for uploading backups to S3 using s3cmd.
-
-Each script has samples included, use '-h' or check the source. THe default
-index is 'logstash', but this option is configurable with '-g' for 'marvel' or
-custom index names.
-
-These are heavily inspired by [a previous collection of
-scripts](http://tech.superhappykittymeow.com/?p=296).
-
-### elasticsearch-remove-old-indices.sh
-
-This script generically walks through the indices, sorts them lexicographically,
-and deletes anything older than the configured number of indices.
-
-### elasticsearch-close-old-indices.sh
-
-This script generically walks through the indices, sorts them lexicographically,
-and closes indices older than the configured number of indices.
+> for close or remove old index, i suggest use [Curator](http://github.com/elasticsearch/curator)
 
 ### elasticsearch-backup-index.sh
 
