@@ -26,8 +26,4 @@ executing the restore script locally after download.
 Something like this might be helpful, assuming you placed the scripts in the
 /opt/es/ directory (formatted for an /etc/cron.d/ file):
 
-    00 7 * * * root /bin/bash /opt/es/elasticsearch-backup-index.sh -b "s3://es-bucket" -i "/opt/elasticsearch/data/elasticsearch/nodes/0/indices" -c "s3cmd put -c /path/to/.s3cfg"
-    00 9 * * * root /bin/bash /opt/es/elasticsearch-remove-old-indices.sh -i 21
-
-
-
+    5 12 * * * /opt/elasticsearch-logstash-index-mgmt/elasticsearch-backup-index.sh -b $DESTFOLDER -i "/var/lib/elasticsearch/elasticsearch-log-analyzor/nodes/0/indices" -c "cp" -a "kibana-int-new" -r 1
